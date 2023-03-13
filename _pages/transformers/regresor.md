@@ -44,7 +44,46 @@ Un aspecto básico del entrenamiento de redes neuronales es el principio de esti
 
 [tutorialmle]: https://goodboychan.github.io/python/coursera/tensorflow_probability/icl/2021/08/19/01-Maximum-likelihood-estimation.html
 
-Este capítulo es probablemente el más complejo de todos y el que ofrece una mayor curva de aprendizaje.
+Este capítulo es probablemente el más complejo de todos y el que ofrece una mayor curva de aprendizaje al aparecer en él un montón de elementos que quizás son nuevos para ti. A continuación se enfatizan algunos de los conceptos más importantes de cada apartado:
+
+## Comentarios al libro
+
+#### Apartado 5.1
+
+Se introduce el concepto de producto escalar que será una piedra angular de todo lo que está por venir. Si recuerdas cómo se hacía el producto de matrices (que aparecerá numerosas veces más adelante), observarás que este consiste en una serie de cálculos de productos escalares. El sesgo (*bias*) es importante en algunos problemas porque permite desplazar las fronteras de decisión como demostraremos más adelante. Observa que no linealidad de la exponenciación de la función sigmoidea *encoge* las diferencias entre los valores de salida de la función según nos alejamos del origen, es decir, aunque 2-0 = 4 -2, se tiene que $$\sigma(2)-\sigma(0) >>> \sigma(4)-\sigma(2)$$. Por otro lado, no es necesario que hagas la demostración analítica, pero sí que observes gráficamente en $$1 - \sigma(x) = \sigma(-x)$$; esta propiedad nos permitirá simplificar algunas ecuaciones. Finalmente, observa que por ahora la función $$\sigma$$ se está aplicando a un escalar, pero más adelante se aplicará a un vector o incluso a un tensor de cualquier número de dimensiones. En este caso, la función se aplica elemento a elemento, es decir, si $$\mathbf{x}$$ es un vector, $$\sigma(\mathbf{x}) = [\sigma(x_1), \sigma(x_2), \ldots, \sigma(x_n)]$$.
+
+#### Apartado 5.2
+
+El ejemplo de clasificación de sentimiento de esta sección es interesante porque muestra la técnica usada hasta hace unos años para esta tarea. Se supone aquí que una persona experta en el dominio ha definido las características (*features*) que ella considera que pueden ser importantes para decidir si una frase tiene connotaciones positivas o negativas. Estas características se computarán para cada frase mediante un programa antes de poder pasarla por el regresor. Este es un proceso costoso porque requiere expertos de cada dominio y porque el criterio de lo que es relevante o no puede ser subjetivo; el número de características en este caso solía estar alrededor de unas pocas decenas. En la actualidad, los modelos neuronales, como veremos, procesan los datos *en bruto* y aprenden las características más relevantes (en cantidades de cientos o miles de ellas), aunque en la mayoría de las ocasiones estas no tienen una interpretación lógica para los expertos. 
+
+Por otra parte, la idea de normalización puede parecer ahora poco relevante, pero jugará un papel importante en el modelo del transformer para evitar que ciertos valores intermedios se hagan demasiado grandes o pequeños. Si miras la gráfica de la función sigmoidea en el apartado anterior, verás que para valores de $$x$$ muy grandes o muy pequeños no hay apenas diferencias en el valor de $$\sigma(x)$$ por lo que la función no será sensible a pequeños cambios en el valor de $$x$$. Además, en estas zonas la función es prácticamente plana, por lo que su derivada es muy pequeña lo que, como veremos más adelante, dificulta el entrenamiento. Por último, la idea de procesar varios datos de entrada a la vez es también muy importante, ya que permite reducir el tiempo de procesamiento. Puedes ver cómo empaquetando por filas una serie de vectores de entrada y con una simple multiplicación matricial seguida de la aplicación de la función sigmoidea se obtiene el resultado de la clasificación de todos los vectores de entrada a la vez. Las GPUs están especializadas en poder realizar estas operaciones matriciales de forma muy eficiente, por lo que siempre intentaremos empaquetar los datos en los denominados *mini-batches* (mini-lotes, en español) para llenar la memoria de la GPU con la mayor cantidad de ellos y poder procesarlos en paralelo. Para que la operación de suma del sesgo sea consistente en tamaños, es necesario *estirar* el sesgo para obtener un vector $$b$$ con el mismo tamaño que el número de muestras procesadas a la vez. Cuando trabajemos con PyTorch veremos que esta operación se realiza automáticamente y que, gracias al mecanismo de *broadcasting*, no es necesario obtener explícitamente un vector con el valor del sesgo copiado y podremos sumar directamente el escalar o un tensor unidimensional de tamaño 1.
+
+#### Apartado 5.3 
+
+La función softmax es el equivalente de la función sigmoidea cuando se tiene que clasificar una muestra en más de dos clases. En este caso, la función recibe un vector de valores no normalizados (es decir, sin un rango concreto) y lo transforma en un vector de probabilidades de pertenencia a cada una de las clases. Al vector no normalizado se le denomina *logits* (logit es la función inversa de la función sigmoidea). Observa que no podríamos haber normalizado los valores entre 0 y 1 dividiendo cada uno por la suma de todos ellos porque hay valores negativos que anularían otros positivos. Podríamos haber considera elevar cada valor del vector de entrada al cuadrado y dividirlo por la suma de todos los cuadrados, pero la función softmax las diferencias, como hemos comentado, y penaliza más los valores más alejados del máximo:
+
+```python
+z = torch.tensor([0.6,1.1,-1.5,1.2,3.2,-1.1])
+squared = z*z / sum(z*z)
+softmax= torch.nn.functional.softmax(z, dim=-1)
+print(z, squared, softmax)  
+# z =       [0.6000, 1.1000, -1.5000, 1.2000, 3.2000, -1.1000]
+# squared = [0.0215, 0.0724,  0.1346, 0.0862, 0.6128,  0.0724]
+# softmax = [0.0548, 0.0904,  0.0067, 0.0999, 0.7382,  0.0100]
+``` 
+
+Observa que cuando aquí hacemos $$\hat{\mathbf{y}} = \mathrm{softmax} (\mathbf{W} \mathbf{x} + \mathbf{b})$$, el vector $$\mathbf{x}$$ corresponde a una única muestra, pero, a diferencia de apartados anteriores, $$\mathbf{W}$$ es una matriz y $$\mathbf{b}$$ es un vector con valores no necesariamente repetidos. En este caso, la matriz $$\mathbf{W}$$ de forma $$K \times f$$ transforma un vector de características de tamaño $$f$$ en un vector de logits de tamaño $$K$$, donde $$K$$ es el número de clases. Si cambiamos la forma de la matriz a $$f \times K$$, entonces una operación equivalente se realizaría con $$\hat{\mathbf{y}} = \mathrm{softmax} (\mathbf{x} \mathbf{W}  + \mathbf{b})$$, donde ahora $$\mathbf{x}$$ y $$\mathbf{b}$$ son vectores fila y no columna. Observa asimismo que en lugar de aplicar la operación a una única muestra (por ejemplo, las características de una sola frase), podemos hacerlo a un lote de estas, *apilándolas* por filas en una matriz $$\mathbf{X}$$ y haciendo $$\hat{\mathbf{y}} = \mathrm{softmax} (\mathbf{X} \mathbf{W}  + \mathbf{B})$$ o apilándolas por columnas y haciendo $$\hat{\mathbf{y}} = \mathrm{softmax} (\mathbf{W} \mathbf{X}  + \mathbf{B})$$. En ambos casos, la matriz $$\mathbf{B}$$ contendrá *repetido* $$m$$ veces el vector de sesgos $$\mathbf{b}$$. El resultado será un lote de $$m$$ vectores de logits de tamaño $$K$$, uno por cada muestra del lote.
+
+Cuando de ahora en adelante veas una ecuación de una parte de un modelo neuronal en la que se multiplica un lote de vectores por una matriz, puedes identificar que se trata de una transformación lineal que transforma cada uno de los vectores de entrada en otro vector normalmente de tamaño diferente. Recuerda bien esto cuando estudiemos el tema de las redes neuronales hacia adelante.
+
+En este apartado se introduce también el concepto de vector *one hot* (un vector donde todos los elementos son cero, excepto uno de ellos que vale uno) que usaremos con frecuencia para referirnos al vector con el que compararemos la salida de la red neuronal. Por ejemplo, si tenemos un problema de clasificación de imágenes de dígitos, el vector *one hot* que correspondería a la etiqueta del 3 sería $$\mathbf{y} = [0,0,0,1,0,0,0,0,0,0]$$.
+
+#### Apartado 5.4
+
+La ecuación $$p(y|x) = \hat{y}^y (1−\hat{y})^{1-y}$$ es solo una forma compacta de escribir matemáticamente la idea de que, si tenemos un dato correctamente etiquetado como $$y$$ (donde $$y$$ es cero o uno), la verosimilitud que el modelo da a este dato es $$\hat{y}$$, si el dato está etiquetado como 1 y $$1−\hat{y}$$ si está etiquetado como 0. Verosimilitud y probabilidad son lo mismo a efectos prácticos, pero usaremos el término verosimilitud para referirnos... 
+
+
+
 
 
 ## Regresores implementados en PyTorch
@@ -60,9 +99,7 @@ Si no lo has hecho ya, puedes empezar a aprender Python y PyTorch siguiendo el [
 [pylog]: https://github.com/jaspock/me/blob/master/assets/code/transformers/logistic-regressor.py
 [pysoft]: https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/softmax-regressor.py
 
-#### Actividad práctica 
-
-Utiliza las herramientas de depuración como se explicaron [aquí][debug] para explorar paso a paso el código de los regresores. Analiza el valor y tipo de las variables, así como la forma de cada tensor y asegúrate de que entiendes qué representa cada dimensión.
+**Actividad práctica.** Utiliza las herramientas de depuración como se explicaron [aquí][debug] para explorar paso a paso el código de los regresores. Analiza el valor y tipo de las variables, así como la forma de cada tensor y asegúrate de que entiendes qué representa cada dimensión.
 
 [debug]: pytorch.html#depuración
 
