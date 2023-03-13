@@ -45,7 +45,6 @@ _styles: >
     /* background: red; */
   }
 
-
 ---
 
 <!--
@@ -63,9 +62,9 @@ _styles: >
 
 Esta guía propone una camino para entender cómo funciona realmente la red neuronal más usada en el campo del procesamiento del lenguaje natural (conocida como *transformer*). Se siguen para ello las explicaciones teóricas de algunos de los capítulos de un buen libro sobre la materia. Se va aprendiendo sobre la marcha (si es necesario) el lenguaje de programación Python, así como los elementos básicos de una librería llamada PyTorch que permite, entre otras cosas, programar redes neuronales que se entrenen y ejecuten sobre GPUs. A continuación, se estudia una implementación ya existente del transformer programada con PyTorch. El objetivo último es poder modificar este código para experimentar con algún problema sencillo que implique el uso del lenguaje humano. La idea es obtener un buen conocimiento que permita afrontar tareas más complejas más adelante y no tanto desarrollar algo llamativo que enseñar a todo el mundo desde el primer momento.
 
-Algunos aspectos los puedes ir estudiando en paralelo. A la vez que aprendes sobre modelos neuronales, puedes ir iniciándote en [Python](#python), NumPy e incluso [PyTorch](#pytorch), una vez vistos los dos anteriores. También puedes repasar en paralelo los [elementos de álgebra y cálculo](#conceptos-previos) que hayas olvidado. El estudio del código del transformer no deberías abordarlo hasta tener bien asimilados todos los conceptos anteriores.
+Algunos aspectos los puedes ir estudiando en paralelo. A la vez que aprendes sobre modelos neuronales, puedes ir iniciándote en [Python](#python), NumPy e incluso, una vez vistos los dos anteriores, [PyTorch](#pytorch). También puedes repasar en paralelo los [elementos de álgebra y cálculo](#conceptos-previos) que hayas olvidado. El estudio del código del transformer no deberías abordarlo hasta tener bien asimilados todos los conceptos anteriores.
 
-Para entender a nivel matemático y conceptual las redes neuronales nos vamos a basar en la tercera edición (todavía inacabada) del libro "[Speech and Language Processing][libroarch]" de Dan Jurafsky y James H. Martin. Los siguientes apartados indican qué capítulos y secciones son relevantes para nuestros propósitos. **Importante**: dado que la versión en línea del libro está inacabada y se actualiza de vez en cuando no solo con nuevos contenidos, sino también con reestructuraciones de los ya existentes y movimientos de secciones de un capítulo a otro, en esta guía se incluyen enlaces y referencias a una versión del libro alojada en Internet Archive que probablemente no se corresponde con la más [actual][libro]. 
+Para entender a nivel matemático y conceptual las redes neuronales nos vamos a basar en la tercera edición (todavía inacabada) del libro "[Speech and Language Processing][libroarch]" de Dan Jurafsky y James H. Martin. Los siguientes apartados indican qué capítulos y secciones son relevantes para nuestros propósitos. **Importante**: dado que la versión en línea del libro está inacabada y se actualiza de vez en cuando no solo con nuevos contenidos, sino también con reestructuraciones de los ya existentes y movimientos de secciones de un capítulo a otro, en esta guía se incluyen enlaces y referencias a una [versión del libro alojada en Internet Archive][libroarch] que probablemente no se corresponde con la más actual (que puedes encontrar [aquí][libro]).
 
 [libro]: https://web.stanford.edu/~jurafsky/slp3/
 [libroarch]: https://web.archive.org/web/20221218211150/https://web.stanford.edu/~jurafsky/slp3/

@@ -725,3 +725,18 @@ progress {
      height: inherit;
  }
 
+
+ /* Custom CSS  >>>>>>>>  */
+
+ .social .contact-icons {
+  font-size: 2.5rem !important;
+ }
+
+ .small-text {
+  font-size: 0.875rem;
+  color: var(--global-text-color-light);
+ }
+
+ footer .container {
+  text-align: center;
+ }
