@@ -22,9 +22,47 @@ Nota: este capítulo es parte de la serie "[Un recorrido peso a peso por el tran
 
 Hasta este momento, a la hora de representar palabras o frases hemos usado características (*features*) que nos han permitido trabajar de forma matemática con elementos lingüísticos. Estas características, sin embargo, son relativamente arbitrarias y exigen un esfuerzo por nuestra parte en su definición. Sin embargo, existe, como vamos a ver ahora, una manera más fundamentada para representar palabras con números que no requiere supervisión humana. Los embeddings incontextuales se explican en el capítulo "[Vector Semantics and Embeddings][embeddings]" [<i class="fas fa-file"></i>][embeddings]
 
-Puedes pasar más o menos rápido por las secciones 6.1 a 6.3, ya que son meramente descriptivas. Lee con detenimiento la sección 6.4 sobre la similitud del coseno. Sáltate directamente las secciones 6.5 a 6.7. Céntrate sobre todo en la sección 6.8 ("Word2vec"). Lee con menos detenimiento las secciones 6.9 a 6.12.
+Comienza leyendo la sección 6.2. Después, estudia la sección 6.4 sobre la similitud del coseno. Sáltate completamente las secciones 6.5 a 6.7. Céntrate, sobre todo, en la sección 6.8 ("Word2vec"), pero lee con menos detenimiento las secciones 6.9 a 6.12.
 
 [embeddings]: https://web.archive.org/web/20221218211150/https://web.stanford.edu/~jurafsky/slp3/6.pdf
+
+#### Apartado 6.2
+
+Los embeddings permiten representar palabras con números de forma que palabras que aparecen en contextos similares tengan representaciones similares. Esta representación numérica es esencial para poder hacer que las redes neuronales puedan trabajar con el lenguaje humano. Aunque a lo largo de las últimas décadas se han desarrollado muchos métodos para obtener embeddings, algoritmos como el *word2vec* que estudiaremos en este capítulo fueron pioneros al permitir obtener representaciones *profundas* (en el sentido de que cada palabra se representa con un vector de cientos o miles de números reales), que mejoraron sustancialmente los resultados en numerosas tareas de procesamiento del lenguaje natural. Una característica de estos embeddings que hacen que no sean los más usados actualmente es que aprenden representaciones no contextuales, es decir, que una palabra como *bajo* con sus múltiples sentidos (búscala en el diccionario) se representa de la misma manera en todos los contextos. Como veremos más adelante, los embeddings contextuales como los obtenidos con los transformers ofrecen una representación única para cada palabra en cada oración en la que aparece.
+
+La idea de por qué vectores de mayor tamaño permiten acercar y alejar de forma más adecuada las palabras en el espacio vectorial en base a su similitud se puede entender con el siguiente ejemplo. Supón que solo tuviéramos 2 dimensiones para representar palabras aparentemente con baja similitud como *fish*, *Mars*, *pencil* o *hat*. Si asumimos el cuadrado de lado 1.5 como espacio de trabajo, dado que estas palabras están poco relacionadas, tiene sentido llevarlas a las esquinas.
+
+{% include figure.html path="assets/img/transformers/embeddings-sq1" title="words representations" class="img-fluid rounded z-depth-1" width="364px" height="256px" %}
+
+Si ahora quisiéramos encontrar una representación bidimensional para *Sunday* podríamos colocarla cerca de *hat* (a fin de cuentas, tradicionalmente la gente ha reservado para el domingo sus mejores sombreros), lo cual de paso aleja a *Sunday* de *Mars* o *pencil* con las que es más difícil que comparta contextos. 
+
+{% include figure.html path="assets/img/transformers/embeddings-sq2" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+
+Ahora supongamos que queremos añadir a nuestra lista la palabra *small*. Dado que esta palabra puede acompañar a *fish*, *hat* o *pencil* y dado que Marte (si lo consideramos como un planeta, obviando que puede ser otras cosas como un dios, una marca de chocolatinas o parte del nombre de un famoso jardín parisino) es uno de los planetas más pequeños del sistema solar, podemos colocar *small* justo a mitad de camino de estas cuatro palabras. Sin embargo, esto también la acerca a *Sunday* con la que parece compartir pocos contextos.
+
+{% include figure.html path="assets/img/transformers/embeddings-sq3" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+
+ ¿Te vas dando cuenta del problema? Es como si no hubiera espacio suficiente para cumplir con todas las restricciones. Una posible solución temporal es intercambiar *Sunday* y *hat*, pero podemos intuir que conforme vayamos añadiendo más palabras al pequeño espacio vectorial, el problema se irá haciendo más y más evidente.
+
+{% include figure.html path="assets/img/transformers/embeddings-sq4" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+
+Si ahora quisiéramos añadir *Phobos*, evidentemente debería situarse cerca de *Mars* al ser un satélite de este planeta, pero eso la acercaría a palabras como *hat* y es difícil encontrar frases en las que se hable de lo usos del sombrero en el satélite Phobos. La clave está en poder añadir una tercera dimensión al espacio vectorial, lo cual nos permitiría separar *Phobos* del resto de palabras excepto *Mars*.
+
+{% include figure.html path="assets/img/transformers/embeddings-sq5" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+
+Es fácil deducir que aumentando el número de dimensiones del espacio vectorial, podemos representar las relaciones entre palabras con mayor precisión. Cuando pasemos a cientos o miles de dimensiones, algunas palabras estarán cerca de otras en algunos de las dimensione, pero no en otras. Observa, en cualquier caso, que hay un problema que no vamos a resolver por ahora: que una palabra como *Mars* con varios sentidos diferentes tenga un único embedding. De hecho, podríamos decir que la mayoría de las palabras tienen sentidos diferentes en cada oración distinta en las que las utilicemos: la palabra *gato* en "El gato está dormido" y "El gato está asustado" no representa exactamente la misma idea de animal, pese a que discreticemos el concepto más profundo que tenemos en nuestra mente cuando queremos hablar del minino en una u otra situación. Este problema de no poder representar la semántica en un caso específico se resolverá más adelante con los embeddings contextuales.
+
+#### Apartado 6.3
+
+Esta sección es opcional, pero puedes echarle un vistazo si quieres conocer enfoques más clásicos para la obtención de embeddings basados en contar co-ocurrencias de palabras en documentos.
+
+#### Apartado 6.4
+
+Este es un apartado muy breve que, aun así, introduce una idea básica: la *similitud* del coseno (no lo llamamos *distancia* porque no cumple con todas las propiedades necesarias) entre dos vectores que representan los embeddings de dos palabras es una medida del parecido entre las palabras correspondientes. Si dos vectores son idénticos, su similitud es 1; si son ortogonales, su similitud es 0; si son opuestos, su similitud es -1. Más aún, el producto escalar es proporcional a la similitud del coseno, pero implica menos cálculos, por lo que lo usaremos como una aproximación eficiente. Recordemos que el producto escalar de dos vectores $$\mathbf{a}$$ y $$\mathbf{b}$$ es:
+
+$$\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i b_i$$
+
+Esta idea de sumar los productos dos a dos de los elementos de dos vectores aparece también en la multiplicación de matrices, por lo que podemos pensar en la multiplicación de dos matrices $$A \times B$$ como la obtención de todos los posibles productos escalares entre las filas de $$A$$ y las columnas de $$B$$. Recuerda esta idea en el tema del transformer cuando usemos productos de matrices para compactar el cálculo de una serie de productos escalares.
 
 
 ## Notación de Einstein

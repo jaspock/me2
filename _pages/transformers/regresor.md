@@ -38,29 +38,25 @@ Casi la totalidad del capítulo es muy relevante para nuestros propósitos al tr
 - El apartado 5.2.2 ("Other classification tasks and features").
 - El apartado 5.2.4 ("Choosing a classifier").
 - La sección 5.7 ("Regularization").
-- Por último, no es necesario que comprendas la sección 5.10 ("Advanced: Deriving the Gradient Equation") antes de pasar a capítulos posteriores, pero es muy recomendable que seas capaz de derivar por ti mismo la función de pérdida más pronto que tarde. Cuando los modelos se vayan haciendo más complejos obtener la derivada manualmente será una tarea ardua e innecesaria, pero hacerlo ahora mejorará tu perspectiva del entrenamiento de redes neuronales.
+- Por último, no es necesario que comprendas la sección 5.10 ("Advanced: Deriving the Gradient Equation") antes de pasar a capítulos posteriores, pero es muy recomendable que seas capaz de derivar por ti mismo la función de pérdida más pronto que tarde. Cuando los modelos se vayan haciendo más complejos obtener la derivada manualmente será una tarea ardua e innecesaria (porque librerías como PyTorch se encargarán de calcularla por nosotros), pero hacerlo ahora mejorará tu perspectiva del entrenamiento de redes neuronales.
 
-Un aspecto básico del entrenamiento de redes neuronales es el principio de estimación por máxima verosimilitud. La explicación del capítulo sobre este método puede complementarse con este [breve tutorial][tutorialmle] [<i class="fas fa-file"></i>][tutorialmle]
+Este capítulo es probablemente el más complejo de todos y el que ofrece una mayor curva de aprendizaje al aparecer en él un montón de elementos que quizás son nuevos para ti. A continuación se enfatizan algunos de los conceptos más importantes de cada apartado.
 
-[tutorialmle]: https://goodboychan.github.io/python/coursera/tensorflow_probability/icl/2021/08/19/01-Maximum-likelihood-estimation.html
-
-Este capítulo es probablemente el más complejo de todos y el que ofrece una mayor curva de aprendizaje al aparecer en él un montón de elementos que quizás son nuevos para ti. A continuación se enfatizan algunos de los conceptos más importantes de cada apartado:
-
-## Comentarios al libro
+## Anotaciones al libro
 
 #### Apartado 5.1
 
-Se introduce el concepto de producto escalar que será una piedra angular de todo lo que está por venir. Si recuerdas cómo se hacía el producto de matrices (que aparecerá numerosas veces más adelante), observarás que este consiste en una serie de cálculos de productos escalares. El sesgo (*bias*) es importante en algunos problemas porque permite desplazar las fronteras de decisión como demostraremos más adelante. Observa que no linealidad de la exponenciación de la función sigmoidea *encoge* las diferencias entre los valores de salida de la función según nos alejamos del origen, es decir, aunque 2-0 = 4 -2, se tiene que $$\sigma(2)-\sigma(0) >>> \sigma(4)-\sigma(2)$$. Por otro lado, no es necesario que hagas la demostración analítica, pero sí que observes gráficamente en $$1 - \sigma(x) = \sigma(-x)$$; esta propiedad nos permitirá simplificar algunas ecuaciones. Finalmente, observa que por ahora la función $$\sigma$$ se está aplicando a un escalar, pero más adelante se aplicará a un vector o incluso a un tensor de cualquier número de dimensiones. En este caso, la función se aplica elemento a elemento, es decir, si $$\mathbf{x}$$ es un vector, $$\sigma(\mathbf{x}) = [\sigma(x_1), \sigma(x_2), \ldots, \sigma(x_n)]$$.
+Se introduce el concepto de producto escalar que será una piedra angular de todo lo que está por venir. Si recuerdas cómo se hacía el producto de matrices (que aparecerá numerosas veces más adelante), observarás que este consiste en una serie de cálculos de productos escalares. El sesgo (*bias*) es importante en algunos problemas porque permite desplazar las fronteras de decisión como demostraremos más adelante. Observa que no linealidad de la exponenciación de la función sigmoide *encoge* las diferencias entre los valores de salida de la función según nos alejamos del origen, es decir, aunque 2-0 = 4 -2, se tiene que $$\sigma(2)-\sigma(0) >>> \sigma(4)-\sigma(2)$$. Por otro lado, no es necesario que hagas la demostración analítica, pero sí que observes gráficamente en $$1 - \sigma(x) = \sigma(-x)$$; esta propiedad nos permitirá simplificar algunas ecuaciones. Finalmente, observa que por ahora la función $$\sigma$$ se está aplicando a un escalar, pero más adelante se aplicará a un vector o incluso a un tensor de cualquier número de dimensiones. En este caso, la función se aplica elemento a elemento, es decir, si $$\mathbf{x}$$ es un vector, $$\sigma(\mathbf{x}) = [\sigma(x_1), \sigma(x_2), \ldots, \sigma(x_n)]$$.
 
 #### Apartado 5.2
 
 El ejemplo de clasificación de sentimiento de esta sección es interesante porque muestra la técnica usada hasta hace unos años para esta tarea. Se supone aquí que una persona experta en el dominio ha definido las características (*features*) que ella considera que pueden ser importantes para decidir si una frase tiene connotaciones positivas o negativas. Estas características se computarán para cada frase mediante un programa antes de poder pasarla por el regresor. Este es un proceso costoso porque requiere expertos de cada dominio y porque el criterio de lo que es relevante o no puede ser subjetivo; el número de características en este caso solía estar alrededor de unas pocas decenas. En la actualidad, los modelos neuronales, como veremos, procesan los datos *en bruto* y aprenden las características más relevantes (en cantidades de cientos o miles de ellas), aunque en la mayoría de las ocasiones estas no tienen una interpretación lógica para los expertos. 
 
-Por otra parte, la idea de normalización puede parecer ahora poco relevante, pero jugará un papel importante en el modelo del transformer para evitar que ciertos valores intermedios se hagan demasiado grandes o pequeños. Si miras la gráfica de la función sigmoidea en el apartado anterior, verás que para valores de $$x$$ muy grandes o muy pequeños no hay apenas diferencias en el valor de $$\sigma(x)$$ por lo que la función no será sensible a pequeños cambios en el valor de $$x$$. Además, en estas zonas la función es prácticamente plana, por lo que su derivada es muy pequeña lo que, como veremos más adelante, dificulta el entrenamiento. Por último, la idea de procesar varios datos de entrada a la vez es también muy importante, ya que permite reducir el tiempo de procesamiento. Puedes ver cómo empaquetando por filas una serie de vectores de entrada y con una simple multiplicación matricial seguida de la aplicación de la función sigmoidea se obtiene el resultado de la clasificación de todos los vectores de entrada a la vez. Las GPUs están especializadas en poder realizar estas operaciones matriciales de forma muy eficiente, por lo que siempre intentaremos empaquetar los datos en los denominados *mini-batches* (mini-lotes, en español) para llenar la memoria de la GPU con la mayor cantidad de ellos y poder procesarlos en paralelo. Para que la operación de suma del sesgo sea consistente en tamaños, es necesario *estirar* el sesgo para obtener un vector $$b$$ con el mismo tamaño que el número de muestras procesadas a la vez. Cuando trabajemos con PyTorch veremos que esta operación se realiza automáticamente y que, gracias al mecanismo de *broadcasting*, no es necesario obtener explícitamente un vector con el valor del sesgo copiado y podremos sumar directamente el escalar o un tensor unidimensional de tamaño 1.
+Por otra parte, la idea de normalización puede parecer ahora poco relevante, pero jugará un papel importante en el modelo del transformer para evitar que ciertos valores intermedios se hagan demasiado grandes o pequeños. Si miras la gráfica de la función sigmoide en el apartado anterior, verás que para valores de $$x$$ muy grandes o muy pequeños no hay apenas diferencias en el valor de $$\sigma(x)$$ por lo que la función no será sensible a pequeños cambios en el valor de $$x$$. Además, en estas zonas la función es prácticamente plana, por lo que su derivada es muy pequeña lo que, como veremos más adelante, dificulta el entrenamiento. Por último, la idea de procesar varios datos de entrada a la vez es también muy importante, ya que permite reducir el tiempo de procesamiento. Puedes ver cómo empaquetando por filas una serie de vectores de entrada y con una simple multiplicación matricial seguida de la aplicación de la función sigmoide se obtiene el resultado de la clasificación de todos los vectores de entrada a la vez. Las GPUs están especializadas en poder realizar estas operaciones matriciales de forma muy eficiente, por lo que siempre intentaremos empaquetar los datos en los denominados *mini-batches* (mini-lotes, en español) para llenar la memoria de la GPU con la mayor cantidad de ellos y poder procesarlos en paralelo. Para que la operación de suma del sesgo sea consistente en tamaños, es necesario *estirar* el sesgo para obtener un vector $$b$$ con el mismo tamaño que el número de muestras procesadas a la vez. Cuando trabajemos con PyTorch veremos que esta operación se realiza automáticamente y que, gracias al mecanismo de *broadcasting*, no es necesario obtener explícitamente un vector con el valor del sesgo copiado y podremos sumar directamente el escalar o un tensor unidimensional de tamaño 1.
 
 #### Apartado 5.3 
 
-La función softmax es el equivalente de la función sigmoidea cuando se tiene que clasificar una muestra en más de dos clases. En este caso, la función recibe un vector de valores no normalizados (es decir, sin un rango concreto) y lo transforma en un vector de probabilidades de pertenencia a cada una de las clases. Al vector no normalizado se le denomina *logits* (logit es la función inversa de la función sigmoidea). Observa que no podríamos haber normalizado los valores entre 0 y 1 dividiendo cada uno por la suma de todos ellos porque hay valores negativos que anularían otros positivos. Podríamos haber considera elevar cada valor del vector de entrada al cuadrado y dividirlo por la suma de todos los cuadrados, pero la función softmax las diferencias, como hemos comentado, y penaliza más los valores más alejados del máximo:
+La función softmax es el equivalente de la función sigmoide cuando se tiene que clasificar una muestra en más de dos clases. En este caso, la función recibe un vector de valores no normalizados (es decir, sin un rango concreto) y lo transforma en un vector de probabilidades de pertenencia a cada una de las clases. Al vector no normalizado se le denomina *logits* (logit es la función inversa de la función sigmoide). Observa que no podríamos haber normalizado los valores entre 0 y 1 dividiendo cada uno por la suma de todos ellos porque hay valores negativos que anularían otros positivos. Podríamos haber considera elevar cada valor del vector de entrada al cuadrado y dividirlo por la suma de todos los cuadrados, pero la función softmax las diferencias, como hemos comentado, y penaliza más los valores más alejados del máximo:
 
 ```python
 z = torch.tensor([0.6,1.1,-1.5,1.2,3.2,-1.1])
@@ -80,11 +76,91 @@ En este apartado se introduce también el concepto de vector *one hot* (un vecto
 
 #### Apartado 5.4
 
-La ecuación $$p(y|x) = \hat{y}^y (1−\hat{y})^{1-y}$$ es solo una forma compacta de escribir matemáticamente la idea de que, si tenemos un dato correctamente etiquetado como $$y$$ (donde $$y$$ es cero o uno), la verosimilitud que el modelo da a este dato es $$\hat{y}$$, si el dato está etiquetado como 1 y $$1−\hat{y}$$ si está etiquetado como 0. Verosimilitud y probabilidad son lo mismo a efectos prácticos, pero usaremos el término verosimilitud para referirnos... 
+Se avisa de que los dos próximos apartados se centran en la entropía cruzada y el descenso por gradiente para el caso de la regresión logística binaria y que después se retomará la regresión softmax.
 
+#### Apartado 5.5
 
+La ecuación $$p(y \vert x) = \hat{y}^y (1−\hat{y})^{1-y}$$ es solo una forma compacta de escribir matemáticamente la idea de que, si tenemos un dato correctamente etiquetado como $$y$$ (donde $$y$$ es cero o uno), la verosimilitud que el modelo da a este dato es $$\hat{y}$$, si el dato está etiquetado como 1 y $$1−\hat{y}$$ si está etiquetado como 0. Verosimilitud y probabilidad denotan algo muy similar a efectos prácticos, pero usaremos el término *verosimilitud* para referirnos a la probabilidad de una serie de datos cuando vamos asignando distintos valores a los parámetros (o pesos) del modelo; por otro lado, si los parámetros no son una variable aleatoria, sino que tienen un valor concreto, hablaremos de la *probabilidad* que tienen los datos dados los parámetros del modelo. 
 
+Un aspecto básico del entrenamiento de redes neuronales es el principio de estimación por máxima verosimilitud. La explicación del capítulo sobre este método puede complementarse con este [breve tutorial][tutorialmle] [<i class="fas fa-file"></i>][tutorialmle]. La idea básica es ir *probando* con diferentes valores de los parámetros intentando encontrar los que maximizan la verosimilitud de los datos. En el caso de la regresión logística, esto se traduce en encontrar los valores de los pesos $$\mathbf{W}$$ y de los sesgos $$\mathbf{b}$$ que maximizan la probabilidad de que los datos etiquetados como 1 tengan una probabilidad alta de ser 1 y los datos etiquetados como 0 tengan una probabilidad baja de ser 1.
 
+[tutorialmle]: https://goodboychan.github.io/python/coursera/tensorflow_probability/icl/2021/08/19/01-Maximum-likelihood-estimation.html
+
+Aunque en algún momento del capítulo se calcula el valor concreto de la función de pérdida $$L_{CE}(\hat{y},y)$$ para un par de datos concretos, nuestro principal interés estará en la forma analítica de la ecuación (5.23), ya que, como se ve en el siguiente apartado, es la que usaremos para calcular el gradiente de la función de pérdida con respecto a los parámetros del modelo y, por tanto, para actualizarlos en cada paso de entrenamiento. No obstante, la media de la función de error sobre un conjunto de datos (bien los datos de entrenamiento, bien los de validación) en forma de un número concreto (0.564, por ejemplo) nos será útil durante el entrenamiento para comprobar si el modelo está mejorando o no.
+
+La discusión sobre la entropía cruzada (*cross-entropy*) se puede extender un poco para ver de dónde viene esta función y por qué minimizarla es equivalente a maximizar la verosimilitud. Más [abajo][cross] tienes una pequeña explicación de este tema.
+
+[cross]: #entropía
+
+Los logaritmos van a aparecer con cierta frecuencia al aprender sobre redes neuronales, por lo que es conveniente recordar algunas de sus propiedades:
+
+- Logaritmo del producto: $$\log(xy) = \log(x) + \log(y)$$
+- Logaritmo de la división: $$\log(x/y) = \log(x) - \log(y)$$
+- Logaritmo de la exponenciación: $$\log(x^a) = a\log(x)$$, donde $$a$$ es una constante
+- Logaritmo de uno: $$\log(1) = 0$$
+
+#### Apartado 5.6
+
+Para recordar fácilmente cómo afecta la derivada a la actualización de los pesos considera, para simplificar, que la función de error adopta la forma de $$x^2$$ y observa en la siguiente gráfica cómo cuando el gradiente es negativo (en el punto con la marca de la estrella) es necesario incrementar el peso para reducir el error, mientras que cuando el gradiente es positivo (en el punto con la marca del círculo) es necesario reducir el peso para reducir el error. En la gráfica se muestra también la derivada de la función de error, que es $$2x$$.
+
+{% include figure.html path="assets/img/transformers/derivativex2.png" title="derivative of x^2" class="img-fluid rounded z-depth-1" width="512px" %}
+
+La gráfica anterior ha sido generada con el siguiente código:
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+squares = lambda x: x*x
+derivative = lambda x: 2*x
+x = np.linspace(-25, 25, 500)
+y = np.array([squares(xi) for xi in x])
+plt.plot(x, y)
+plt.text(-17, 300, r'$x^2$', fontsize=12)
+plt.scatter(-15, squares(-15), marker="*", color="blue")
+plt.arrow(-14, squares(15), 10, 0, head_width=20, head_length=2, width=1, color="green")
+plt.scatter(18, squares(18), marker="o", color="blue")
+plt.arrow(17, squares(18), -10, 0, head_width=20, head_length=2, width=1, color="green")
+y = np.array([derivative(xi) for xi in x])
+plt.plot(x, y)
+plt.text(20, 72, r'$2x$', fontsize=12)
+plt.xlabel(r'$w$')
+plt.ylabel('loss')
+plt.grid()
+plt.savefig("derivativex2.png")
+```
+
+#### Apartado 5.7
+
+Puedes saltar este apartado sobre la regularización, ya que no es fundamental en estos momentos para entender el funcionamiento de las redes neuronales.
+
+#### Apartado 5.8
+
+Cuando se usa la entropía cruzada como función de error en la regresión multinomial, su forma es muy sencilla ya que es igual al logaritmo de la probabilidad de la clase correcta. No obstante, la complejidad de la derivada dependerá de la complejidad de todo el modelo subyacente. En el caso de la regresión logística binaria, la función de error es la entropía cruzada binaria, que ya vimos que toma la siguiente forma:
+
+$$L_{CE}(\hat{y},y) = -y\log(\hat{y}) - (1-y)\log(1-\hat{y})$$
+
+#### Apartado 5.9
+
+Puedes saltar este apartado.
+
+#### Apartado 5.10
+
+Se calcula aquí paso a paso el gradiente de la entropía cruzada binaria respecto a cada uno de los parámetros del regresor logístico binario. Estas son las reglas de derivación que se necesitan para derivar la mayor parte de las funciones de error que se usan en redes neuronales:
+
+- Derivada con un exponente: $$\frac{d}{dx}(x^a) = a x^{a-1}$$
+- Derivada con el producto de una constante: $$\frac{d}{dx}(cx) = c$$, donde $$c$$ es una constante
+- Derivada de una constante: $$\frac{d}{dx}(c) = 0$$
+- Derivada de la suma: $$\frac{d}{dx}(x+y) = \frac{d}{dx}(x) + \frac{d}{dx}(y)$$
+- Derivada del logaritmo: $$\frac{d}{dx}(\log(x)) = \frac{1}{x}$$
+- Derivada del producto: $$\frac{d}{dx}(xy) = y\frac{d}{dx}(x) + x\frac{d}{dx}(y)$$
+
+Dado que la función de error será una función compuesta de múltiples funciones, la regla de la cadena nos será de suma utilidad:
+
+$$\displaystyle \frac{\displaystyle d f(g(x))}{\displaystyle dx} = f'(g(x))\cdot g'(x)$$, 
+
+donde $$f'$$ y $$g'$$ representan las derivadas de $$f$$ y $$g$$ respectivamente.
+
+Sería interesante que calcularas la derivada de la entropía cruzada binaria respecto al umbral y que te animaras a calcular también el gradiente para el caso de la regresión logística multinomial.
 
 ## Regresores implementados en PyTorch
 
@@ -138,7 +214,7 @@ $$
 H(p,q) = - \sum_{x} p_x \log(q_x)
 $$
 
-Puedes ver, por lo tanto, que la fórmula 5.21 del libro coincide con la ecuación anterior: maximizar la verosimilitud respecto a los parámetros del modelo es equivalente a minimizar la entropía cruzada $$H(y,\hat{y})$$.
+Puedes ver, por lo tanto, que la fórmula (5.21) del libro coincide con la ecuación anterior: maximizar la verosimilitud respecto a los parámetros del modelo es equivalente a minimizar la entropía cruzada $$H(y,\hat{y})$$.
 
 
 ## Ejercicios de repaso
