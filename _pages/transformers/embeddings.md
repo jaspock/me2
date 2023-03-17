@@ -72,17 +72,30 @@ Hay un párrafo en el que se menciona que al ser los valores de los vectores de 
 
 En cualquier caso, aunque el valor del coseno esté acotado entre -1 y 1, el del producto escalar no lo está. 
 
-#### Apartado 6.5
+#### Apartado 6.8
 
 Este apartado introduce el algoritmo *skip-gram* para el cálculo de embeddings de palabras. Este algoritmo puede verse como una aplicación del regresor logístico binario que ya hemos estudiado, por lo que es recomendable que le des un repaso antes. Vamos a tener una serie de datos positivos (la salida deseada será 1) y una serie de datos negativos (la salida deseada será 0). Los datos positivos son pares de palabras que aparecen en el mismo contexto, mientras que los datos negativos son pares de palabras que no aparecen en el mismo contexto. El objetivo del algoritmo es aprender a predecir si dos palabras aparecen en el mismo contexto o no.
 
 ¿Pero si la salida del regresor es un único escalar entre 0 y 1, de dónde salen los embeddings? La idea es que cada palabra va a venir representada a la entrada por un vector diferente de pesos, de manera que la salida del regresor cuantificará cómo de probable es que dos palabras aparezcan en el mismo contexto. Y ya hemos visto que el producto escalar nos sirve para medir la similitud de dos vectores. Pero como este producto escalar no está acotado, le aplicamos la función sigmoide para normalizarlo en este rango.
 
-La principal diferencia con el regresor logístico binario que ya vimos es que allí teníamos un vector de características $$\mathbf{x}$$ que representaba la entrada y un vector de pesos $$\mathbf{w}$$ que representaba los parámetros aprendibles por el algoritmo de descenso por gradiente. El vector de entrada venía determinado por los datos del problema y sus valores no se aprendían. En el caso de *skip-gram*, los dos vectores en juego son parámetros a aprender y estos vienen determinados por las dos palabras que queremos representar en cada momento. Una vez finalizado el entrenamiento, el vector de cada palabra será su vector de embeddings, que podremos usar para representarla en tareas adicionales.
+La principal diferencia con el regresor logístico binario que ya vimos es que allí teníamos un vector de características $$\mathbf{x}$$ que representaba la entrada y un vector de pesos $$\mathbf{w}$$ que representaba los parámetros aprendibles por el algoritmo de descenso por gradiente. El vector de entrada venía determinado por los datos del problema y sus valores no se aprendían. En el caso de *skip-gram*, los dos vectores en juego son parámetros a aprender y estos vienen determinados por las dos palabras que queremos representar en cada momento. Una vez finalizado el entrenamiento, el vector de cada palabra será su vector de embeddings, que podremos usar para representarla en tareas adicionales. El sesgo $$b$$ no se usa en este caso, ya que no es necesario.
 
 Una de las grandes ventajas de este algoritmo es que se basa en una técnica de aprendizaje *auto supervisada* (*self-supervised*) que no requiere el costoso proceso de etiquetar manualmente los datos. No es que el algoritmo no necesite datos etiquetados, ya que necesita saber cuándo la salida deseada para dos palabras es 0 y cuándo es 1. Pero no necesita que estas etiquetas vengan ya dadas, sino que las puede obtener de forma automática a partir de los datos de entrada. Para ello solo necesitamos una colección de textos (por ejemplo, textos de la Wikipedia o noticias descargadas de internet) y definir una ventana de contexto. La ventana de contexto es un número entero que indica cuántas palabras a la izquierda y a la derecha de la palabra objetivo queremos considerar como contexto. El algoritmo extrae las muestras positivas recorriendo una a una las palabras del texto y considerando como contexto las palabras que hay a su izquierda y a su derecha dentro de la ventana. Las muestras negativas se obtienen de forma aleatoria, seleccionando dos palabras al azar del texto y considerando que no aparecen en el mismo contexto.
 
 En el apartado 6.8.2 se dice que "the noise words are chosen according to their weighted unigram frequency $$p_α(w)$$, where $$α$$ is a weight". Ten en cuenta que la $$w$$ se refiere aquí a una palabra que se va a elegir para una muestra negativa y no tiene que ver que con la palabra objetivo que se denota también con $$w$$. Cuando dice que las palabras ruidosas se escogen en base a su probabilidad de unigramas, se refiere únicamente a que se escogen en base a su frecuencia de aparición en el texto: palabras más frecuentes se escogerán más veces que palabras menos frecuentes para no terminar aprendiendo representaciones de palabras que no aparecen apenas en el texto y de las que no vamos a tener apenas muestras positivas a costa de aprender peores representaciones de las palabras que más nos interesan. Observa también cómo el uso de una alteración no lineal en forma del exponente $$\alpha$$ suaviza ligeramente estas frecuencias para no penalizar en exceso a las palabras poco frecuentes.
+
+Las muestras negativas y positivas se combinan en un mini-batch y se entrenan usando una función de pérdida $$L_{\mathrm{CE}}$$como la de la ecuación (6.34), pero extendida a todo el lote incorporándole la media de los errores.
+
+Finalmente, las ecuaciones (6.35) a (6.37) muestran las fórmulas del gradiente respecto a los parámetros del modelo. Estaría bien que te animaras a derivarlas por tu cuenta, pero no es estrictamente necesario para poder seguir el resto del curso. Si las comparas con detenimiento con las del regresor logístico binario que ya estudiamos, verás que, como no podía ser de otra manera, son iguales. Cuando la derivada es respecto a $$c_{\mathrm{pos}}$$, por ejemplo, esta variable juega el papel de los pesos $$\mathbf{w}$$ del regresor logístico y $$\mathbf{w}$$ (el embedding de la palabra objetivo) se considera constante y juega el papel de la entrada $$\mathbf{x}$$ en las derivadas del regresor logístico.
+
+#### Apartados 6.9 a 6.12
+
+Estos apartados son menos densos que el anterior y te ayudarán a entender otros aspectos derivados del uso de embeddings:
+
+- la proyección de embeddings en espacios de dimensionalidad baja para su visualización;
+- la aritmética de embeddings para extraer relaciones semánticas entre las palabras asociadas;
+- la presencia y consecuencia de sesgos en los embeddings aprendidos;
+- los conjuntos de datos de evaluación que permiten comparar distintas formas de obtener las representaciones de palabras. 
 
 ## Notación de Einstein
 
