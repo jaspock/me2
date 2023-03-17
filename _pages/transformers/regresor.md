@@ -99,6 +99,8 @@ Los logaritmos van a aparecer con cierta frecuencia al aprender sobre redes neur
 - Logaritmo de la exponenciación: $$\log(x^a) = a\log(x)$$, donde $$a$$ es una constante
 - Logaritmo de uno: $$\log(1) = 0$$
 
+En particular, el logaritmo de un valor entre cero y uno es negativo, por lo que verás que cuando se hable del logaritmo de la probabilidad de un dato (a veces se denota por *logprob*), este tendrá valores como -4,321 o -12,678. Una probabilidad (logarítmica) de -4,321 es mayor que una de -12,678 y representará, por tanto, un evento más probable.
+
 #### Apartado 5.6
 
 Para recordar fácilmente cómo afecta la derivada a la actualización de los pesos considera, para simplificar, que la función de error adopta la forma de $$x^2$$ y observa en la siguiente gráfica cómo cuando el gradiente es negativo (en el punto con la marca de la estrella) es necesario incrementar el peso para reducir el error, mientras que cuando el gradiente es positivo (en el punto con la marca del círculo) es necesario reducir el peso para reducir el error. En la gráfica se muestra también la derivada de la función de error, que es $$2x$$.
