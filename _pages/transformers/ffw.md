@@ -27,14 +27,15 @@ Todo el capítulo es relevante, aunque probablemente se hable de cosas que ya co
 [neural]: https://web.archive.org/web/20221218211150/https://web.stanford.edu/~jurafsky/slp3/7.pdf
 
 
+## Anotaciones al libro
+
+Es recomendable que estudies estos comentarios después de una primera lectura del capítulo y antes de la segunda lectura.
+
+#### Apartado
+
+
 ## Implementación en PyTorch
 
 Una implementación de un [modelo de lengua][pylm] [<i class="fas fa-file"></i>][pylm] con redes *feedforward* como el que se ha visto en el capítulo de redes *feedforward*. La implementación coincide con la del artículo "[A neural probabilistic language model](https://dl.acm.org/doi/10.5555/944919.944966)" de 2003, que puedes consultar si necesitas más información.
 
-[pylm]: https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/ff-neural-lm.py
-
-
-- Una implementación del [transformer](https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/transformer.py) <i class="fas fa-file"></i> más compacta que la vamos a estudiar a continuación. La implementación sigue la del artículo "[Attention is all you need](https://arxiv.org/abs/1706.03762)" de 2017, que puedes consultar si necesitas más información. 
-- Una implementación sencilla del [modelo BERT](https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/bert.py) <i class="fas fa-file"></i>.
-
-
+[pylm]: https://github.com/jaspock/me/blob/master/assets/code/transformers/ff-neural-lm.py

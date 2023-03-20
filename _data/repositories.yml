@@ -1,12 +1,14 @@
 github_users:
-  - torvalds
-  - alshedivat
-
+  - jaspock
+  
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - transducens/mtl-da-emnlp
+  - apertium/apertium
+  - jaspock/mtextos2223
+  - jaspock/dai2223
+  - jaspock/mt4everyone
+  - jaspock/funicular
+  - transducens/CrossLingualNeuralFMS
+  - transducens/forecat
+  - transducens/Forecat-OmegaT
+  

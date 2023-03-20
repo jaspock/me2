@@ -31,6 +31,13 @@ Salta las secciones 9.2 a 9.6, que se centran en otro modelo alternativo para el
 [basictransformer]: https://web.archive.org/web/20221218211150/https://web.stanford.edu/~jurafsky/slp3/9.pdf
 
 
+## Anotaciones al libro
+
+Es recomendable que estudies estos comentarios después de una primera lectura del capítulo y antes de la segunda lectura.
+
+#### Apartado 
+
+
 ## Atención escalada
 
 Un factor que puede parecer arbitrario en la ecuación de la atención es la división por la raíz cuadrada de la dimensión de la clave. Para entender la motivación de esta operación, observa que cuanto mayor es el tamaño de los embeddings, mayor es el resultado de cada producto escalar $$q_i k_j$$. El problema es que cuando la función softmax se aplica a valores muy altos, su carácter exponencial hace que asigne valores muy pequeños a todos los elementos excepto al que tiene el valor más alto. Es decir, cuando la función softmax se satura, tiende a un vector *one-hot*. Esto provocará que la atención se centre en un único token e ignore el resto, lo que no es un comportamiento deseable.
@@ -109,8 +116,8 @@ Estudiamos aquí dos arquitecturas muy similares:
 
 A estas alturas, ya deberías estar dedicando tiempo a estudiar las implementaciones de los modelos, pero recuerda empezar por las más sencillas de bloques anteriores.
 
-[pytr]: https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/transformer.py
-[pybert]: https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/bert.py
+[pytr]: https://github.com/jaspock/me/blob/master/assets/code/transformers/transformer.py
+[pybert]: https://github.com/jaspock/me/blob/master/assets/code/transformers/bert.py
 
 
 ## Ejercicios de repaso

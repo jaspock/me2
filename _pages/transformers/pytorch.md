@@ -56,7 +56,7 @@ El uso de los cuadernos de Jupyter y de Google Colab se explica en los apartados
 
 ## PyTorch
 
-<i class="fas fa-clock"></i> 3 horas
+<i class="fas fa-clock"></i> 2 horas
 
 PyTorch no es en principio una librería sencilla de entender. Al estudiar de primeras el código de un modelo neuronal programado en PyTorch, es posible que no entiendas ciertas partes o que no seas capaz de deducir todo el comportamiento implícito subyacente. Es por ello que un esfuerzo inicial de estudio de la librería es necesario. 
 
@@ -75,7 +75,7 @@ Como complemento a lo anterior, puedes consultar también el [tutorial oficial][
 
 Depurar es una de las mejores maneras de comprender todos los secretos del código que estás estudiando. Es importante que te sientas cómodo con el proceso de depuración. A continuación, se dan algunos consejos para depurar código en Python usando el entorno de VS Code, pero instrucciones similares son válidas para otros entornos de desarrollo.
 
-Para depurar el fichero actual, coloca uno o más puntos de interrupción en el código clicando en la pequeña columna que hay a la izquierda de los números de línea hasta que aparezca una marca roja. Luego, asegúrate de que tienes el entorno de ejecución de Python adecuado seleccionado en la barra inferior y ejecuta `Run/Start Debugging` (`F5`) en el menú. El código se ejecutará hasta que se alcance el punto de interrupción. Puedes hacer que el código se ejecute paso a paso usando `Run/Step Over` o `Run/Step Into`, pero ganarás mucho tiempo si te aprendes los atajos de teclado correspondientes (`F10`y `F11`, respectivamente). Además de inspeccionar las variables desde la interfaz, te será muy útil acceder a la paleta de órdenes (`Help/Show All Commands`o bien `Ctrl+Shift+P`) y mostrar el terminal de depuración tecleando `Debug Console`. En este terminal puedes ejecutar cualquier código Python para, por ejemplo:
+Para depurar el fichero actual, coloca uno o más puntos de interrupción en el código clicando en la pequeña columna que hay a la izquierda de los números de línea hasta que aparezca una marca roja. Luego, asegúrate de que tienes el entorno de ejecución de Python adecuado seleccionado en la barra inferior y ejecuta `Run/Start Debugging` (`F5`) en el menú. El código se ejecutará hasta que se alcance el punto de interrupción. Puedes hacer que el código se ejecute paso a paso usando `Run/Step Over` o `Run/Step Into`, pero ganarás mucho tiempo si te aprendes los atajos de teclado correspondientes (`F10`y `F11`, respectivamente). Además de inspeccionar las variables desde la interfaz, te será muy útil acceder a la paleta de órdenes (`Help/Show All Commands`o bien `Ctrl+Shift+P`) y mostrar el terminal de depuración tecleando `Debug Console`. En este terminal puedes ejecutar cualquier código en Python para, por ejemplo:
 
 - ver el tipo de una variable: ```type(learning_rate)```
 - ver el contenido de un tensor: ```x```
@@ -87,6 +87,10 @@ Si el tensor es grande, suele ser suficiente para nuestros propósitos ver solo 
 ```python
 torch.set_printoptions(precision=4, edgeitems= 4, threshold=30)
 ```
+
+## Más detalles sobre PyTorch
+
+La página de [apuntes](apuntes) sobre PyTorch recoge algunos detalles adicionales sobre la librería necesarios para entender las implementaciones de modelos que vamos a estudiar.
 
 ## Implementaciones adicionales
 

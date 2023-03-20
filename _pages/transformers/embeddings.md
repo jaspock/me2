@@ -26,6 +26,10 @@ Comienza leyendo la sección 6.2. Después, estudia la sección 6.4 sobre la sim
 
 [embeddings]: https://web.archive.org/web/20221218211150/https://web.stanford.edu/~jurafsky/slp3/6.pdf
 
+## Anotaciones al libro
+
+Es recomendable que estudies estos comentarios después de una primera lectura del capítulo y antes de la segunda lectura.
+
 #### Apartado 6.2
 
 Los embeddings permiten representar palabras con números de forma que palabras que aparecen en contextos similares tengan representaciones similares. Esta representación numérica es esencial para poder hacer que las redes neuronales (u otros modelos de aprendizaje automático) puedan trabajar con el lenguaje humano. Si dada una frase podemos representar cada una de sus palabras mediante un vector, podemos entonces intentar aprender un clasificador que, por ejemplo, determine el sentimiento de la frase a partir de de la suma de los embeddings de sus palabras.
@@ -34,23 +38,23 @@ Aunque a lo largo de las últimas décadas se han desarrollado muchos métodos p
 
 La idea de por qué vectores de mayor tamaño permiten acercar y alejar de forma más adecuada las palabras en el espacio vectorial en base a su similitud se puede entender con el siguiente ejemplo. Supón que solo tuviéramos 2 dimensiones para representar palabras aparentemente con baja similitud como *fish*, *Mars*, *pencil* o *hat*. Si asumimos el cuadrado de lado 1.5 como espacio de trabajo, dado que estas palabras están poco relacionadas, tiene sentido llevarlas a las esquinas.
 
-{% include figure.html path="assets/img/transformers/embeddings-sq1" title="words representations" class="img-fluid rounded z-depth-1" width="364px" height="256px" %}
+{% include figure.html path="assets/img/transformers/embeddings-sq-1.png" title="words representations" class="img-fluid rounded z-depth-1" width="364px" height="256px" %}
 
 Si ahora quisiéramos encontrar una representación bidimensional para *Sunday* podríamos colocarla cerca de *hat* (a fin de cuentas, tradicionalmente la gente ha reservado para el domingo sus mejores sombreros), lo cual de paso aleja a *Sunday* de *Mars* o *pencil* con las que es más difícil que comparta contextos. 
 
-{% include figure.html path="assets/img/transformers/embeddings-sq2" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+{% include figure.html path="assets/img/transformers/embeddings-sq-2.png" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
 
 Ahora supongamos que queremos añadir a nuestra lista la palabra *small*. Dado que esta palabra puede acompañar a *fish*, *hat* o *pencil* y dado que Marte (si lo consideramos como un planeta, obviando que puede ser otras cosas como un dios, una marca de chocolatinas o parte del nombre de un famoso jardín parisino) es uno de los planetas más pequeños del sistema solar, podemos colocar *small* justo a mitad de camino de estas cuatro palabras. Sin embargo, esto también la acerca a *Sunday* con la que parece compartir pocos contextos.
 
-{% include figure.html path="assets/img/transformers/embeddings-sq3" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+{% include figure.html path="assets/img/transformers/embeddings-sq-3.png" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
 
 ¿Te vas dando cuenta del problema? Es como si no hubiera espacio suficiente para cumplir con todas las restricciones. Una posible solución temporal es intercambiar *Sunday* y *hat*, pero podemos intuir que conforme vayamos añadiendo más palabras al pequeño espacio vectorial, el problema se irá haciendo más y más evidente.
 
-{% include figure.html path="assets/img/transformers/embeddings-sq4" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+{% include figure.html path="assets/img/transformers/embeddings-sq-4.png" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
 
 Si ahora quisiéramos añadir *Phobos*, evidentemente debería situarse cerca de *Mars* al ser un satélite de este planeta, pero eso la acercaría a palabras como *hat* y es difícil encontrar frases en las que se hable de lo usos del sombrero en el satélite Phobos. La clave está en poder añadir una tercera dimensión al espacio vectorial, lo cual nos permitiría separar *Phobos* del resto de palabras excepto *Mars*.
 
-{% include figure.html path="assets/img/transformers/embeddings-sq5" title="words representations" class="img-fluid rounded z-depth-1" width="256px" height="256px" %}
+{% include figure.html path="assets/img/transformers/embeddings-sq-5.png" title="words representations" class="img-fluid rounded z-depth-1" width="420px" height="364px" %}
 
 Es fácil deducir que aumentando el número de dimensiones del espacio vectorial, podemos representar las relaciones entre palabras con mayor precisión. Cuando pasemos a cientos o miles de dimensiones, algunas palabras estarán cerca de otras en algunos de las dimensiones, pero no en otras. Observa, en cualquier caso, que hay un problema que no vamos a resolver por ahora: que una palabra como *Mars* con varios sentidos diferentes tenga un único embedding. De hecho, podríamos decir que la mayoría de las palabras tienen sentidos diferentes en cada oración distinta en las que las utilicemos: la palabra *gato* en "El gato está dormido" y "El gato está asustado" no representa exactamente la misma idea de animal, pese a que discreticemos el concepto más profundo que tenemos en nuestra mente cuando queremos hablar del minino en una u otra situación. Este problema de no poder representar la semántica en un caso específico se resolverá más adelante con los embeddings contextuales.
 
@@ -99,13 +103,13 @@ Estos apartados son menos densos que el anterior y te ayudarán a entender otros
 
 ## Notación de Einstein
 
-Consideremos el caso en el que tenemos un mini-batch de palabras objetivo representadas por sus embeddings $\mathbf{w}_1,\mathbf{w}_2,\ldots,\mathbf{w}_E$. Para cada palabra objetivo anterior, tenemos una palabra contextual asociada en el conjunto $\mathbf{c}_1,\mathbf{c}_2,\ldots,\mathbf{c}_E$. Para simplificar, no consideramos las muestras negativas, pero el análisis que vamos a hacer es totalmente extensible al caso en el que se incluyan. 
+Consideremos el caso en el que tenemos un mini-batch de palabras objetivo representadas por sus embeddings $$\mathbf{w}_1,\mathbf{w}_2,\ldots,\mathbf{w}_E$$. Para cada palabra objetivo anterior, tenemos una palabra contextual asociada en el conjunto $$\mathbf{c}_1,\mathbf{c}_2,\ldots,\mathbf{c}_E$$. Para simplificar, no consideramos las muestras negativas, pero el análisis que vamos a hacer es totalmente extensible al caso en el que se incluyan. 
 
-Sea $N$ el tamaño de los embeddings. Queremos calcular el producto escalar de cada $\mathbf{w}_i$ con cada $\mathbf{c}_i$, cálculo este que ya has visto que es fundamental en el entrenamiento y uso de los modelos de skip-grams. Para obtener estos productos escalares usando PyTorch y beneficiarnos de la eficiencia de las operaciones matriciales calculadas en GPUs, podemos empaquetar por filas los embeddings de las palabras objetivo en una matriz $A$ de tamaño $E \times N$ y los embeddings de las palabras contextuales por columnas en una matriz $B$ de tamaño $N \times E$. Si calculamos el producto $A \cdot B$ obtendremos una matriz de tamaño $E \times E$ en la que cada elemento $i,j$ es el producto escalar de $\mathbf{w}_i$ con $\mathbf{c}_j$. 
+Sea $$N$$ el tamaño de los embeddings. Queremos calcular el producto escalar de cada $$\mathbf{w}_i$$ con cada $$\mathbf{c}_i$$, cálculo este que ya has visto que es fundamental en el entrenamiento y uso de los modelos de skip-grams. Para obtener estos productos escalares usando PyTorch y beneficiarnos de la eficiencia de las operaciones matriciales calculadas en GPUs, podemos empaquetar por filas los embeddings de las palabras objetivo en una matriz $$A$$ de tamaño $$E \times N$$ y los embeddings de las palabras contextuales por columnas en una matriz $$B$$ de tamaño $$N \times E$$. Si calculamos el producto $$A \cdot B$$ obtendremos una matriz de tamaño $$E \times E$$ en la que cada elemento $$i,j$$ es el producto escalar de $$\mathbf{w}_i$$ con $$\mathbf{c}_j$$. 
 
-Sin embargo, nosotros solo estamos interesados en una pequeña parte de todos estos productos escalares. En concreto, aquellos que forman parte de la diagonal del resultado, que serán los de la forma  $\mathbf{w}_i$ $\mathbf{c}_i$. La multiplicación de matrices es muy ineficiente en este caso para nuestros propósitos, pero si buscamos en la documentación de PyTorch no encontraremos en principio una operación que se ajuste exactamente a nuestros intereses. 
+Sin embargo, nosotros solo estamos interesados en una pequeña parte de todos estos productos escalares. En concreto, aquellos que forman parte de la diagonal del resultado, que serán los de la forma  $$\mathbf{w}_i$$ $$\mathbf{c}_i$$. La multiplicación de matrices es muy ineficiente en este caso para nuestros propósitos, pero si buscamos en la documentación de PyTorch no encontraremos en principio una operación que se ajuste exactamente a nuestros intereses. 
 
-Existe, sin embargo, en PyTorch una manera eficiente y compacta de definir operaciones matriciales basada en la notación de Einstein, de la que puedes aprender un poco leyendo hasta el apartado 2.8 aproximadamente del tutorial "[Einsum is all you need](https://rockt.github.io/2018/04/30/einsum)" <i class="fas fa-file"></i>. En particular, podemos observar que nos interesa obtener un vector $\mathbf{d}$ tal que:
+Existe, sin embargo, en PyTorch una manera eficiente y compacta de definir operaciones matriciales basada en la notación de Einstein, de la que puedes aprender un poco leyendo hasta el apartado 2.8 aproximadamente del tutorial "[Einsum is all you need](https://rockt.github.io/2018/04/30/einsum)". En particular, podemos observar que nos interesa obtener un vector $$\mathbf{d}$ tal que:
 
 $$
 \mathbf{d}_i = \mathbf{w}_i \cdot \mathbf{c}_i = \sum_{j} \mathbf{w}_{i,j} \, \mathbf{c}_{j,i}
@@ -121,7 +125,7 @@ d = torch.einsum('ij,ji->i', A, B)
 
 Una implementación del algoritmo [skip-gram][pyskip] [<i class="fas fa-file"></i>][pyskip] para la obtención de embeddings incontextuales que sigue las pautas marcadas en el libro de Jurafsky y Martin. La implementación anterior se basa en [otra](https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/skipgrams-original.py) que sigue el enfoque del trabajo "[Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546)" de 2013, que no se ajusta totalmente al que hemos estudiado nosotros.
 
-[pyskip]: https://github.com/jaspock/me/blob/master/assets/code/guia-transformers/skipgrams-jurafsky.py
+[pyskip]: https://github.com/jaspock/me/blob/master/assets/code/transformers/skipgrams-jurafsky.py
 
 No es necesario que entiendas este código antes de pasar al siguiente capítulo del libro, pero recuerda estudiarlo cuando lo hayas hecho. Llegados a este punto, no obstante, va siendo recomendable que comiences a familiarizarte con el uso de PyTorch, quizás en paralelo al estudio del próximo bloque.
 
@@ -133,5 +137,3 @@ No es necesario que entiendas este código antes de pasar al siguiente capítulo
    - A=Paris, B=@1, C=London, D=@2
    - A=plane, B=@3, C=person, D=@4
    - A=mother, B=father, C=@5, D=@6
-
-

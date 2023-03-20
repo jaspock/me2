@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
+subtitle: <a href='https://www.ua.es'>Universitat d'Alacant</a>, Spain. <a href="https://www.dlsi.ua.es">DLSI</a>. <a href="https://www.iuii.ua.es">IUII</a>. Machine translation, grande cuisine with neural models, plain web development, artificial artificial artificial intelligence, heartfelt science.
 
 profile:
   align: right
@@ -16,7 +16,7 @@ social: true  # includes social icons at the bottom of the page
 
 ---
 
-Dr. Juan Antonio Pérez-Ortiz is an associate professor in computer science and researcher at Universitat d’Alacant, Spain, director of the Transducens research group, and co-founder of Prompsit Language Engineering. 
+Dr. Juan Antonio Pérez-Ortiz is an associate professor in computer science and researcher at Universitat d’Alacant, Spain, director of the Transducens research group, and co-founder of [Prompsit](https://www.prompsit.com) Language Engineering. 
 
 He has worked on machine translation (rule-based, statistical and neural) and computer-aided translation since 1999, especially as a member of the team involved in the development of the rule-based machine translation system Apertium. He has also researched in the field of interactive translation prediction and hybridisation of different machine translation paradigms. 
 
